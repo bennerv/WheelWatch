@@ -44,8 +44,8 @@ public class StarterActivity extends Activity {
     ImageView good_image;
     ImageView bad_image;
 
-    private VehicleSpeed speed;
-    private SteeringWheelAngle steeringAngle;
+    private double speed;
+    private double steeringAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +56,8 @@ public class StarterActivity extends Activity {
         mVehicleSpeedView = (TextView) findViewById(R.id.vehicle_speed);
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
 
-        speed = new VehicleSpeed(0);
-        steeringAngle = new SteeringWheelAngle(0);
+        speed = 0.0;
+        steeringAngle = 0.0;
 
         ActionBar actionBar = getActionBar();
 
@@ -117,13 +117,13 @@ public class StarterActivity extends Activity {
                     // Finally, we've got a new value and we're running on the
                     // UI thread - we set the text of the EngineSpeed view to
                     // the latest value
-                    speed = speed_measurement;
+                    speed = speed_measurement.getValue().doubleValue();
 
                     String text = String.format(getString(R.string.speed_message), speed_measurement.getValue().doubleValue());
                     Log.i(TAG, text);
                     mVehicleSpeedView.setText(text);
 
-                    if (checkConditions(speed.getValue().doubleValue(), steeringAngle.getValue().doubleValue())) {
+                    if (checkConditions(speed, steeringAngle)) {
                         // show red
                         good_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
@@ -145,7 +145,7 @@ public class StarterActivity extends Activity {
             StarterActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    steeringAngle = steering_measurement;
+                    steeringAngle = steering_measurement.getValue().doubleValue();
 
                     String text = String.format(getString(R.string.angle_message), steering_measurement.getValue().doubleValue());
                     Log.i(TAG, text);
@@ -153,7 +153,7 @@ public class StarterActivity extends Activity {
                     mSteeringWheelView.setText(text);
 
 
-                    if (checkConditions(speed.getValue().doubleValue(), steeringAngle.getValue().doubleValue())) {
+                    if (checkConditions(speed, steeringAngle)) {
                         // show red
                         good_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
