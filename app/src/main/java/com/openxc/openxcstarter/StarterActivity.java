@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.openxc.measurements.SteeringWheelAngle;
 import com.openxcplatform.openxcstarter.R;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
@@ -21,6 +22,7 @@ public class StarterActivity extends Activity {
 
     private VehicleManager mVehicleManager;
     private TextView mEngineSpeedView;
+    private TextView mSteeringWheelView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,8 @@ public class StarterActivity extends Activity {
         // grab a reference to the engine speed text object in the UI, so we can
         // manipulate its value later from Java code
         mEngineSpeedView = (TextView) findViewById(R.id.vehicle_speed);
+
+        mSteeringWheelView = (TextView) findViewById(R.id.steering);
     }
 
     @Override
@@ -85,6 +89,22 @@ public class StarterActivity extends Activity {
         }
     };
 
+    SteeringWheelAngle.Listener mAngleListener = new SteeringWheelAngle.Listener() {
+        @Override
+        public void receive(Measurement measurement) {
+
+            final SteeringWheelAngle steeringAngle = (SteeringWheelAngle) measurement;
+
+            StarterActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSteeringWheelView.setText("Steering Wheel Angle (degs): "
+                            + steeringAngle.getValue().doubleValue());
+                }
+            });
+        }
+    };
+
     private ServiceConnection mConnection = new ServiceConnection() {
         // Called when the connection with the VehicleManager service is
         // established, i.e. bound.
@@ -102,6 +122,7 @@ public class StarterActivity extends Activity {
             // we request that the VehicleManager call its receive() method
             // whenever the EngineSpeed changes
             mVehicleManager.addListener(EngineSpeed.class, mSpeedListener);
+            mVehicleManager.addListener(SteeringWheelAngle.class, mAngleListener);
         }
 
         // Called when the connection with the service disconnects unexpectedly
