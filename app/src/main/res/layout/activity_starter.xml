@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/speed"
+        android:text="@string/speed_message"
         android:id="@+id/vehicle_speed"
         android:textSize="30dp"
         android:textColor="#ffffff" />
@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/vehicle_speed"
-        android:text="@string/angle"
+        android:text="@string/angle_message"
         android:textSize="30dp"
         android:textColor="#ffffff" />
 
