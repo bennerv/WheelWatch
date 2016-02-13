@@ -15,6 +15,8 @@ import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.ImageView;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -35,7 +37,16 @@ public class StarterActivity extends Activity {
     private VehicleManager mVehicleManager;
     private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
+
     private DecimalFormat df;
+
+    // Variables to determine dangerous driving
+    private static int maxSpeed = 15;
+    private static int maxAngle = 300;
+
+    // Images for bad and good
+    ImageView good_image;
+    ImageView bad_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +64,10 @@ public class StarterActivity extends Activity {
             actionBar.setTitle(R.string.wheel_title);
         }
 
-        df = new DecimalFormat("##.##");
+        df = new DecimalFormat("###.##");
+
+        good_image = (ImageView)findViewById(R.id.good_image);
+        bad_image = (ImageView)findViewById(R.id.warning_image);
     }
 
     @Override
@@ -103,8 +117,17 @@ public class StarterActivity extends Activity {
                     // Finally, we've got a new value and we're running on the
                     // UI thread - we set the text of the EngineSpeed view to
                     // the latest value
-                    mVehicleSpeedView.setText("Vehicle speed (km/hr): "
-                            + df.format(speed.getValue().doubleValue()));
+
+                    mVehicleSpeedView.setText(getString(R.string.speed_message, speed.getValue().doubleValue()));
+
+                    if (speed.getValue().intValue() > maxSpeed) {
+                        // show red
+                        good_image.setVisibility(View.GONE);
+                        bad_image.setVisibility(View.VISIBLE);
+                    } else {
+                        bad_image.setVisibility(View.GONE);
+                        good_image.setVisibility(View.VISIBLE);
+                    }
                 }
             });
         }
@@ -119,8 +142,17 @@ public class StarterActivity extends Activity {
             StarterActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSteeringWheelView.setText("Steering Wheel Angle (degs): "
-                            + df.format(steeringAngle.getValue().doubleValue()));
+                    mSteeringWheelView.setText(getString(R.string.angle_message, steeringAngle.getValue().doubleValue()));
+
+
+                    if (Math.abs(steeringAngle.getValue().intValue()) > maxAngle) {
+                        // show red
+                        good_image.setVisibility(View.GONE);
+                        bad_image.setVisibility(View.VISIBLE);
+                    } else {
+                        bad_image.setVisibility(View.GONE);
+                        good_image.setVisibility(View.VISIBLE);
+                    }
                 }
             });
         }
