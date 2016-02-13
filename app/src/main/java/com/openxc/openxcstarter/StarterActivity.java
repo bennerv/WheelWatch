@@ -1,5 +1,6 @@
 package com.openxc.openxcstarter;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,8 +32,10 @@ public class StarterActivity extends Activity {
         // grab a reference to the engine speed text object in the UI, so we can
         // manipulate its value later from Java code
         mEngineSpeedView = (TextView) findViewById(R.id.vehicle_speed);
-
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setTitle("Wheel Watch");
     }
 
     @Override
