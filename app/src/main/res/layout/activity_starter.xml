@@ -52,5 +52,5 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/greengood"
         android:visibility="visible"/>
-    
+
 </RelativeLayout>
