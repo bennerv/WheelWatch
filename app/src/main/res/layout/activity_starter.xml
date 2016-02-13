@@ -26,5 +26,13 @@
         android:text="@string/angle"
         android:textSize="40dp"
         android:textColor="#ffffff" />
-    
+
+    <ImageView
+        android:id="@+id/big_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/steering"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/wheelwatchlogo"/>
+
 </RelativeLayout>
