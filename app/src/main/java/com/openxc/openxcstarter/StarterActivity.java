@@ -6,8 +6,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.telephony.PhoneStateListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -20,6 +25,10 @@ import com.openxc.measurements.VehicleSpeed;
 import com.openxcplatform.openxcstarter.R;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
+
+import java.security.Key;
+import java.text.DecimalFormat;
+import java.util.Map;
 
 public class StarterActivity extends Activity {
     private static final String TAG = "StarterActivity";
@@ -198,6 +207,8 @@ public class StarterActivity extends Activity {
         if(id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+        } else if(id == R.id.phone_call) {
+            makeCall();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -209,5 +220,17 @@ public class StarterActivity extends Activity {
         else {
             return false;
         }
+    }
+
+    public void makeCall() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String phone = sharedPreferences.getString("number", "111");
+
+        //make the phone call
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phone));
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        startActivity(intent);
+        Log.d(TAG, "Calling the following number " + phone);
+
     }
 }
