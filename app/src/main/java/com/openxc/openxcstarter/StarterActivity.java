@@ -20,9 +20,6 @@ import com.openxc.measurements.VehicleSpeed;
 import com.openxcplatform.openxcstarter.R;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
-import com.openxc.measurements.EngineSpeed;
-
-import java.text.DecimalFormat;
 
 public class StarterActivity extends Activity {
     private static final String TAG = "StarterActivity";
@@ -31,15 +28,15 @@ public class StarterActivity extends Activity {
     private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
 
-    private DecimalFormat df;
-
     // Variables to determine dangerous driving
-    private static int maxSpeed = 15;
-    private static int maxAngle = 300;
+    private static double maxCondition = 15 * 50;
 
     // Images for bad and good
     ImageView good_image;
     ImageView bad_image;
+
+    private VehicleSpeed speed;
+    private SteeringWheelAngle steeringAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +45,16 @@ public class StarterActivity extends Activity {
         // grab a reference to the engine speed text object in the UI, so we can
         // manipulate its value later from Java code
         mVehicleSpeedView = (TextView) findViewById(R.id.vehicle_speed);
-
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
+
+        speed = new VehicleSpeed(0);
+        steeringAngle = new SteeringWheelAngle(0);
 
         ActionBar actionBar = getActionBar();
 
         if (getActionBar() != null) {
             actionBar.setTitle(R.string.wheel_title);
         }
-
-        df = new DecimalFormat("###.##");
 
         good_image = (ImageView)findViewById(R.id.good_image);
         bad_image = (ImageView)findViewById(R.id.warning_image);
@@ -101,19 +98,23 @@ public class StarterActivity extends Activity {
             // When we receive a new EngineSpeed value from the car, we want to
             // update the UI to display the new value. First we cast the generic
             // Measurement back to the type we know it to be, an EngineSpeed.
-            final VehicleSpeed speed = (VehicleSpeed) measurement;
+            final VehicleSpeed speed_measurement = (VehicleSpeed) measurement;
             // In order to modify the UI, we have to make sure the code is
             // running on the "UI thread" - Google around for this, it's an
             // important concept in Android.
             StarterActivity.this.runOnUiThread(new Runnable() {
+                @Override
                 public void run() {
                     // Finally, we've got a new value and we're running on the
                     // UI thread - we set the text of the EngineSpeed view to
                     // the latest value
+                    speed = speed_measurement;
 
-                    mVehicleSpeedView.setText(getString(R.string.speed_message, speed.getValue().doubleValue()));
+                    String text = String.format(getString(R.string.speed_message), speed_measurement.getValue().doubleValue());
+                    Log.i(TAG, text);
+                    mVehicleSpeedView.setText(text);
 
-                    if (speed.getValue().intValue() > maxSpeed) {
+                    if (checkConditions(speed.getValue().doubleValue(), steeringAngle.getValue().doubleValue())) {
                         // show red
                         good_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
@@ -130,15 +131,20 @@ public class StarterActivity extends Activity {
         @Override
         public void receive(Measurement measurement) {
 
-            final SteeringWheelAngle steeringAngle = (SteeringWheelAngle) measurement;
+            final SteeringWheelAngle steering_measurement = (SteeringWheelAngle) measurement;
 
             StarterActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSteeringWheelView.setText(getString(R.string.angle_message, steeringAngle.getValue().doubleValue()));
+                    steeringAngle = steering_measurement;
+
+                    String text = String.format(getString(R.string.angle_message), steering_measurement.getValue().doubleValue());
+                    Log.i(TAG, text);
+
+                    mSteeringWheelView.setText(text);
 
 
-                    if (Math.abs(steeringAngle.getValue().intValue()) > maxAngle) {
+                    if (checkConditions(speed.getValue().doubleValue(), steeringAngle.getValue().doubleValue())) {
                         // show red
                         good_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
@@ -194,5 +200,14 @@ public class StarterActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean checkConditions (double speed, double steeringAngle) {
+        if (speed * Math.abs(steeringAngle) > maxCondition) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
