@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.widget.TextView;
 
 import com.openxc.measurements.SteeringWheelAngle;
+import com.openxc.measurements.VehicleSpeed;
 import com.openxcplatform.openxcstarter.R;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
@@ -21,7 +22,7 @@ public class StarterActivity extends Activity {
     private static final String TAG = "StarterActivity";
 
     private VehicleManager mVehicleManager;
-    private TextView mEngineSpeedView;
+    private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
 
     @Override
@@ -30,7 +31,7 @@ public class StarterActivity extends Activity {
         setContentView(R.layout.activity_starter);
         // grab a reference to the engine speed text object in the UI, so we can
         // manipulate its value later from Java code
-        mEngineSpeedView = (TextView) findViewById(R.id.vehicle_speed);
+        mVehicleSpeedView = (TextView) findViewById(R.id.vehicle_speed);
 
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
     }
@@ -44,7 +45,7 @@ public class StarterActivity extends Activity {
             Log.i(TAG, "Unbinding from Vehicle Manager");
             // Remember to remove your listeners, in typical Android
             // fashion.
-            mVehicleManager.removeListener(EngineSpeed.class,
+            mVehicleManager.removeListener(VehicleSpeed.class,
                     mSpeedListener);
             unbindService(mConnection);
             mVehicleManager = null;
@@ -67,13 +68,13 @@ public class StarterActivity extends Activity {
      * Later in the file, we'll ask the VehicleManager to call the receive()
      * function here whenever a new EngineSpeed value arrives.
      */
-    EngineSpeed.Listener mSpeedListener = new EngineSpeed.Listener() {
+     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
         @Override
         public void receive(Measurement measurement) {
             // When we receive a new EngineSpeed value from the car, we want to
             // update the UI to display the new value. First we cast the generic
             // Measurement back to the type we know it to be, an EngineSpeed.
-            final EngineSpeed speed = (EngineSpeed) measurement;
+            final VehicleSpeed speed = (VehicleSpeed) measurement;
             // In order to modify the UI, we have to make sure the code is
             // running on the "UI thread" - Google around for this, it's an
             // important concept in Android.
@@ -82,7 +83,7 @@ public class StarterActivity extends Activity {
                     // Finally, we've got a new value and we're running on the
                     // UI thread - we set the text of the EngineSpeed view to
                     // the latest value
-                    mEngineSpeedView.setText("Engine speed (RPM): "
+                    mVehicleSpeedView.setText("Vehicle speed (km/hr): "
                             + speed.getValue().doubleValue());
                 }
             });
@@ -121,7 +122,7 @@ public class StarterActivity extends Activity {
             // have an EngineSpeed.Listener (see above, mSpeedListener) and here
             // we request that the VehicleManager call its receive() method
             // whenever the EngineSpeed changes
-            mVehicleManager.addListener(EngineSpeed.class, mSpeedListener);
+            mVehicleManager.addListener(VehicleSpeed.class, mSpeedListener);
             mVehicleManager.addListener(SteeringWheelAngle.class, mAngleListener);
         }
 
