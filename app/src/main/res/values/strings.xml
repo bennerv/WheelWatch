@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="speed">Speed:</string>
     <string name="angle">Angle:</string>
+    <string name="wheel_title">Wheel Watch</string>
 
 </resources>

@@ -19,12 +19,15 @@ import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
 import com.openxc.measurements.EngineSpeed;
 
+import java.text.DecimalFormat;
+
 public class StarterActivity extends Activity {
     private static final String TAG = "StarterActivity";
 
     private VehicleManager mVehicleManager;
     private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
+    private DecimalFormat df;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,12 @@ public class StarterActivity extends Activity {
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
 
         ActionBar actionBar = getActionBar();
-        actionBar.setTitle("Wheel Watch");
+
+        if (getActionBar() != null) {
+            actionBar.setTitle(R.string.wheel_title);
+        }
+
+        df = new DecimalFormat("##.##");
     }
 
     @Override
@@ -88,7 +96,7 @@ public class StarterActivity extends Activity {
                     // UI thread - we set the text of the EngineSpeed view to
                     // the latest value
                     mVehicleSpeedView.setText("Vehicle speed (km/hr): "
-                            + speed.getValue().doubleValue());
+                            + df.format(speed.getValue().doubleValue()));
                 }
             });
         }
@@ -104,7 +112,7 @@ public class StarterActivity extends Activity {
                 @Override
                 public void run() {
                     mSteeringWheelView.setText("Steering Wheel Angle (degs): "
-                            + steeringAngle.getValue().doubleValue());
+                            + df.format(steeringAngle.getValue().doubleValue()));
                 }
             });
         }
