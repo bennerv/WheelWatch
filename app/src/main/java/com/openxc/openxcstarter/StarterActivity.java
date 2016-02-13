@@ -1,5 +1,6 @@
 package com.openxc.openxcstarter;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,6 +35,9 @@ public class StarterActivity extends Activity {
         mVehicleSpeedView = (TextView) findViewById(R.id.vehicle_speed);
 
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setTitle("Wheel Watch");
     }
 
     @Override
