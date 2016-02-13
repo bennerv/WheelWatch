@@ -27,7 +27,12 @@ public class StarterActivity extends Activity {
     private VehicleManager mVehicleManager;
     private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
+
     private DecimalFormat df;
+
+    // Variables to determine dangerous driving
+    private static int maxSpeed = 30;
+    private static int maxAngle = 360;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,7 @@ public class StarterActivity extends Activity {
             actionBar.setTitle(R.string.wheel_title);
         }
 
-        df = new DecimalFormat("##.##");
+        df = new DecimalFormat("###.##");
     }
 
     @Override
@@ -97,6 +102,10 @@ public class StarterActivity extends Activity {
                     // the latest value
                     mVehicleSpeedView.setText("Vehicle speed (km/hr): "
                             + df.format(speed.getValue().doubleValue()));
+
+                    if (speed.getValue().intValue() > maxSpeed) {
+                        // Show red
+                    }
                 }
             });
         }
@@ -113,6 +122,10 @@ public class StarterActivity extends Activity {
                 public void run() {
                     mSteeringWheelView.setText("Steering Wheel Angle (degs): "
                             + df.format(steeringAngle.getValue().doubleValue()));
+
+                    if (steeringAngle.getValue().intValue() > maxAngle) {
+                        // show red
+                    }
                 }
             });
         }
