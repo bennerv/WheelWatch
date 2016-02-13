@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -36,6 +37,11 @@ public class StarterActivity extends Activity {
     private VehicleManager mVehicleManager;
     private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
+
+    private TelephonyManager telephonyManager;
+    private PhoneStateListener phoneStateListener;
+
+    private DecimalFormat df;
 
     // Variables to determine dangerous driving
     private static double maxCondition = 15 * 50;
@@ -224,13 +230,31 @@ public class StarterActivity extends Activity {
 
     public void makeCall() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String phone = sharedPreferences.getString("number", "111");
+        String phone = sharedPreferences.getString("number", "5555555555");
+
+        //Don't allow users to put in an emergency number for testing purposes
+        if(phone.trim().equals("911")) {
+            phone = "5555555555";
+        }
+
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        phoneStateListener = new MyPhoneStateListener(this);
+        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
         //make the phone call
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phone));
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         startActivity(intent);
+
+
+
         Log.d(TAG, "Calling the following number " + phone);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
+
 
     }
 }
