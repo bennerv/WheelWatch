@@ -1,3 +1,12 @@
+WheelWatch
+==============
+
+This is a proof of concept project using OpenXC.  It detects erratic driving
+and notifies the driver.  Part of wwhack competition at Michigan Tech 2016.
+
+
+
+
 OpenXCStarter
 ==============
 
