@@ -35,6 +35,8 @@ public class StarterActivity extends Activity {
     private TextView mVehicleSpeedView;
     private TextView mSteeringWheelView;
 
+
+
     private TelephonyManager telephonyManager;
     private PhoneStateListener phoneStateListener;
     private int numberOfWarnings = 0;
@@ -51,8 +53,8 @@ public class StarterActivity extends Activity {
     ImageView bad_image;
     ImageView emergency_image;
 
-    private double speed;
-    private double steeringAngle;
+    private double speed = 0;
+    private double steeringAngle = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,11 @@ public class StarterActivity extends Activity {
 
         speed = 0.0;
         steeringAngle = 0.0;
+
+        String speedInitial = String.format(getString(R.string.speed_message), 0.0);
+        String angleInitial = String.format(getString(R.string.angle_message), 0.0);
+        mVehicleSpeedView.setText(speedInitial);
+        mSteeringWheelView.setText(angleInitial);
 
         ActionBar actionBar = getActionBar();
 
