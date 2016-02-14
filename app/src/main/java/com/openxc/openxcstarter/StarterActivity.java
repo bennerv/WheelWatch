@@ -44,15 +44,15 @@ public class StarterActivity extends Activity {
     private DecimalFormat df;
 
     // Variables to determine dangerous driving
-    private static double maxCondition = 15 * 50;
+    private static double maxCondition = 30 * 300;
 
     // Images for bad and good
     ImageView good_image;
     ImageView bad_image;
     ImageView emergency_image;
 
-    private double speed;
-    private double steeringAngle;
+    private double speed = 0;
+    private double steeringAngle = 0;
 
     private SharedPreferences sharedPreferences;
 
@@ -68,6 +68,11 @@ public class StarterActivity extends Activity {
 
         speed = 0.0;
         steeringAngle = 0.0;
+
+        String speedInitial = String.format(getString(R.string.speed_message), 0.0);
+        String angleInitial = String.format(getString(R.string.angle_message), 0.0);
+        mVehicleSpeedView.setText(speedInitial);
+        mSteeringWheelView.setText(angleInitial);
 
         ActionBar actionBar = getActionBar();
 
