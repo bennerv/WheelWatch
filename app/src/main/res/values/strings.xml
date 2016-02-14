@@ -5,6 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="speed_message">Speed (km/hr): %.2f</string>
+    <string name="speed_message_mph">Speed (mph): %.2f</string>
     <string name="angle_message">Angle (degs): %.2f</string>
     <string name="title_activity_settings">Settings</string>
     <string name="wheel_title">Wheel Watch</string>
