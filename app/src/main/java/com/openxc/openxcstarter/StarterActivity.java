@@ -39,7 +39,7 @@ public class StarterActivity extends Activity {
     private PhoneStateListener phoneStateListener;
     private int numberOfWarnings = 0;
     private double maxSpeed = 0;
-    private boolean hasCalled = false;
+    private static boolean hasCalled = false;
 
     private DecimalFormat df;
 
@@ -136,7 +136,6 @@ public class StarterActivity extends Activity {
                     String text = String.format(getString(R.string.speed_message), speed_measurement.getValue().doubleValue());
                     mVehicleSpeedView.setText(text);
 
-
                     if(hasCalled) {
                         good_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.GONE);
@@ -182,7 +181,6 @@ public class StarterActivity extends Activity {
                         emergency_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
                         warningUpdate();
-
                     } else {
                         bad_image.setVisibility(View.GONE);
                         emergency_image.setVisibility(View.GONE);
@@ -259,8 +257,6 @@ public class StarterActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phone));
         startActivity(intent);
 
-
-
         Log.d(TAG, "Calling the following number " + phone);
     }
 
@@ -317,8 +313,14 @@ public class StarterActivity extends Activity {
         // Call if problem
         if(numberOfWarnings > 4 && !hasCalled) {
             hasCalled = true;
-            makeCall();
 
+            Log.i(TAG, "MADE IT HERE SHOULD UPDATE THE VIEWS");
+            Log.i(TAG, Boolean.toString(hasCalled));
+            good_image.setVisibility(View.GONE);
+            bad_image.setVisibility(View.GONE);
+            emergency_image.setVisibility(View.VISIBLE);
+
+            makeCall();
         }
     }
 }
