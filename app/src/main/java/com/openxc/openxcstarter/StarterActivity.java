@@ -38,7 +38,7 @@ public class StarterActivity extends Activity {
     private TelephonyManager telephonyManager;
     private PhoneStateListener phoneStateListener;
     private int numberOfWarnings = 0;
-    private double maxSpeed = 0;
+    private double maxSpeed = 0.0;
     private static boolean hasCalled = false;
 
     private DecimalFormat df;
@@ -54,6 +54,8 @@ public class StarterActivity extends Activity {
     private double speed;
     private double steeringAngle;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,7 @@ public class StarterActivity extends Activity {
         // manipulate its value later from Java code
         mVehicleSpeedView = (TextView) findViewById(R.id.vehicle_speed);
         mSteeringWheelView = (TextView) findViewById(R.id.steering);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         speed = 0.0;
         steeringAngle = 0.0;
@@ -125,6 +128,14 @@ public class StarterActivity extends Activity {
             // In order to modify the UI, we have to make sure the code is
             // running on the "UI thread" - Google around for this, it's an
             // important concept in Android.
+
+            //Check for empirical or metric units
+            String unitString = sharedPreferences.getString("unit", "0");
+            int unit = Integer.parseInt(unitString);
+
+            final boolean empirical = unit == 0;
+            //convert to empirical if selected
+
             StarterActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -133,7 +144,17 @@ public class StarterActivity extends Activity {
                     // the latest value
                     speed = speed_measurement.getValue().doubleValue();
 
+                    if(empirical) {
+                        speed = speed * 0.621371;
+                    }
+
                     String text = String.format(getString(R.string.speed_message), speed_measurement.getValue().doubleValue());
+                    if(empirical) {
+                        text += " mph";
+                    } else {
+                        text += " km/h";
+                    }
+
                     mVehicleSpeedView.setText(text);
 
                     if(hasCalled) {
@@ -168,7 +189,7 @@ public class StarterActivity extends Activity {
                     steeringAngle = steering_measurement.getValue().doubleValue();
 
                     String text = String.format(getString(R.string.angle_message), steering_measurement.getValue().doubleValue());
-
+                    text += " deg";
                     mSteeringWheelView.setText(text);
 
                     if(hasCalled) {
@@ -237,11 +258,17 @@ public class StarterActivity extends Activity {
     }
 
     public boolean checkConditions (double speed, double steeringAngle) {
+
+        //always return false if travelling less than 15mph
+        if(speed < 24.2) {
+            return false;
+        }
+
         return speed * Math.abs(steeringAngle) > maxCondition;
     }
 
     public void makeCall() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String phone = sharedPreferences.getString("number", "5555555555");
 
         //Don't allow users to put in an emergency number for testing purposes
@@ -262,7 +289,7 @@ public class StarterActivity extends Activity {
 
     public void setMaxSpeed() {
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String roadString = sharedPreferences.getString("road", "0");
         int road = Integer.parseInt(roadString);
 
