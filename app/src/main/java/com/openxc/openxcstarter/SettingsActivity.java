@@ -1,7 +1,10 @@
 package com.openxc.openxcstarter;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
 
 import com.openxcplatform.openxcstarter.R;
 
@@ -16,6 +19,9 @@ public class SettingsActivity extends Activity {
                 .replace(R.id.activity_settings, new SettingsFragment())
                 .commit();
     }
+
+
+
 
 
 }

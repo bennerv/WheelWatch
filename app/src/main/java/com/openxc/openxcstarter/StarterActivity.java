@@ -267,6 +267,8 @@ public class StarterActivity extends Activity {
         //always return false if travelling less than 15mph
         if(speed < 24.2) {
             return false;
+        } else if(speed > maxSpeed) {
+            return true;
         }
 
         return speed * Math.abs(steeringAngle) > maxCondition;
