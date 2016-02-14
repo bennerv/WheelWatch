@@ -61,7 +61,7 @@
         android:id="@+id/emergency_image"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/redwarning"
+        android:src="@drawable/redemergency"
         android:visibility="gone"/>
 
     <TextView
