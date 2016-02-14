@@ -24,6 +24,8 @@ import com.openxc.measurements.VehicleSpeed;
 import com.openxcplatform.openxcstarter.R;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
+
+
 import java.text.DecimalFormat;
 
 public class StarterActivity extends Activity {
@@ -47,6 +49,7 @@ public class StarterActivity extends Activity {
     // Images for bad and good
     ImageView good_image;
     ImageView bad_image;
+    ImageView emergency_image;
 
     private double speed;
     private double steeringAngle;
@@ -71,6 +74,12 @@ public class StarterActivity extends Activity {
 
         good_image = (ImageView)findViewById(R.id.good_image);
         bad_image = (ImageView)findViewById(R.id.warning_image);
+        emergency_image = (ImageView) findViewById(R.id.emergency_image);
+
+        //update the number of warnings right away
+        String text = String.format(getString(R.string.number_of_warnings), numberOfWarnings);
+        TextView warnings = (TextView) findViewById(R.id.number_of_warnings);
+        warnings.setText(text);
     }
 
     @Override
@@ -127,12 +136,20 @@ public class StarterActivity extends Activity {
                     String text = String.format(getString(R.string.speed_message), speed_measurement.getValue().doubleValue());
                     mVehicleSpeedView.setText(text);
 
-                    if (checkConditions(speed, steeringAngle)) {
+
+                    if(hasCalled) {
+                        good_image.setVisibility(View.GONE);
+                        bad_image.setVisibility(View.GONE);
+                        emergency_image.setVisibility(View.VISIBLE);
+                    } else if (checkConditions(speed, steeringAngle)) {
                         // show red
                         good_image.setVisibility(View.GONE);
+                        emergency_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
+                        warningUpdate();
                     } else {
                         bad_image.setVisibility(View.GONE);
+                        emergency_image.setVisibility(View.GONE);
                         good_image.setVisibility(View.VISIBLE);
                     }
                 }
@@ -155,13 +172,20 @@ public class StarterActivity extends Activity {
 
                     mSteeringWheelView.setText(text);
 
-
-                    if (checkConditions(speed, steeringAngle)) {
+                    if(hasCalled) {
+                        good_image.setVisibility(View.GONE);
+                        bad_image.setVisibility(View.GONE);
+                        emergency_image.setVisibility(View.VISIBLE);
+                    } else if (checkConditions(speed, steeringAngle)) {
                         // show red
                         good_image.setVisibility(View.GONE);
+                        emergency_image.setVisibility(View.GONE);
                         bad_image.setVisibility(View.VISIBLE);
+                        warningUpdate();
+
                     } else {
                         bad_image.setVisibility(View.GONE);
+                        emergency_image.setVisibility(View.GONE);
                         good_image.setVisibility(View.VISIBLE);
                     }
                 }
@@ -210,8 +234,6 @@ public class StarterActivity extends Activity {
         if(id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if(id == R.id.phone_call) {
-            makeCall();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -284,5 +306,19 @@ public class StarterActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         setMaxSpeed();
+    }
+
+    public void warningUpdate() {
+        numberOfWarnings++;
+        String text = String.format(getString(R.string.number_of_warnings), numberOfWarnings);
+        TextView warnings = (TextView) findViewById(R.id.number_of_warnings);
+        warnings.setText(text);
+
+        // Call if problem
+        if(numberOfWarnings > 4 && !hasCalled) {
+            hasCalled = true;
+            makeCall();
+
+        }
     }
 }
