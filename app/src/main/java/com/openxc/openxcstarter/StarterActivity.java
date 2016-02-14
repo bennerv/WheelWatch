@@ -44,7 +44,7 @@ public class StarterActivity extends Activity {
     private DecimalFormat df;
 
     // Variables to determine dangerous driving
-    private static double maxCondition = 15 * 50;
+    private static double maxCondition = 30 * 300;
 
     // Images for bad and good
     ImageView good_image;
@@ -239,7 +239,9 @@ public class StarterActivity extends Activity {
     }
 
     public boolean checkConditions (double speed, double steeringAngle) {
-        return speed * Math.abs(steeringAngle) > maxCondition;
+        boolean test = (speed * Math.abs(steeringAngle) > maxCondition ||
+                speed > 150);
+        return test;
     }
 
     public void makeCall() {
