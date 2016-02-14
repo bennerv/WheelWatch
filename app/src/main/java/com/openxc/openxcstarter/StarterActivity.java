@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -20,16 +19,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import com.openxc.measurements.SteeringWheelAngle;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxcplatform.openxcstarter.R;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.Measurement;
-
-import java.security.Key;
 import java.text.DecimalFormat;
-import java.util.Map;
 
 public class StarterActivity extends Activity {
     private static final String TAG = "StarterActivity";
@@ -40,6 +35,9 @@ public class StarterActivity extends Activity {
 
     private TelephonyManager telephonyManager;
     private PhoneStateListener phoneStateListener;
+    private int numberOfWarnings = 0;
+    private double maxSpeed = 0;
+    private boolean hasCalled = false;
 
     private DecimalFormat df;
 
@@ -100,6 +98,7 @@ public class StarterActivity extends Activity {
             Intent intent = new Intent(this, VehicleManager.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
+        setMaxSpeed();
     }
 
     /* This is an OpenXC measurement listener object - the type is recognized
@@ -126,7 +125,6 @@ public class StarterActivity extends Activity {
                     speed = speed_measurement.getValue().doubleValue();
 
                     String text = String.format(getString(R.string.speed_message), speed_measurement.getValue().doubleValue());
-                    Log.i(TAG, text);
                     mVehicleSpeedView.setText(text);
 
                     if (checkConditions(speed, steeringAngle)) {
@@ -154,7 +152,6 @@ public class StarterActivity extends Activity {
                     steeringAngle = steering_measurement.getValue().doubleValue();
 
                     String text = String.format(getString(R.string.angle_message), steering_measurement.getValue().doubleValue());
-                    Log.i(TAG, text);
 
                     mSteeringWheelView.setText(text);
 
@@ -220,12 +217,7 @@ public class StarterActivity extends Activity {
     }
 
     public boolean checkConditions (double speed, double steeringAngle) {
-        if (speed * Math.abs(steeringAngle) > maxCondition) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return speed * Math.abs(steeringAngle) > maxCondition;
     }
 
     public void makeCall() {
@@ -248,13 +240,49 @@ public class StarterActivity extends Activity {
 
 
         Log.d(TAG, "Calling the following number " + phone);
+    }
 
+    public void setMaxSpeed() {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String roadString = sharedPreferences.getString("road", "0");
+        int road = Integer.parseInt(roadString);
+
+        switch(road) {
+
+            //City case (max speed of 40mph or 64.4km/hr)
+            case 0:
+                maxSpeed = 64.4;
+                break;
+
+            //Rural case (max speed of 60mph or 96.6km/hr)
+            case 1:
+                maxSpeed = 96.6;
+                break;
+
+            //Hwy case (max speed of 75mph or 122.3km/hr)
+            case 2:
+                maxSpeed = 122.3;
+                break;
+
+            default:
+                break;
+        }
+        Log.i(TAG, "Max speed is " + maxSpeed);
     }
 
     @Override
     public void onDestroy() {
-        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
 
+        if(telephonyManager != null && phoneStateListener != null) {
+            telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
+        }
+        super.onDestroy();
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setMaxSpeed();
     }
 }
